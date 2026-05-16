@@ -45,6 +45,7 @@ oneplus_ace_6t
 oneplus_15r
 oneplus_15
 oneplus_15t
+realme_neo_8
 realme_neo6_se_b
 realme_gt_neo6_b
 realme_neo7_b
@@ -81,7 +82,9 @@ oppo_find_x8_ultra_b
 oppo_pad_4_pro_b
 oppo_reno_15_b
 oppo_pad_3_b
-oppo_pad_5_b
+oppo_pad_air5_b
+oppo_pad_5_mt6878_b
+oppo_pad_5_mt6991_b
 
 # Android15
 oneplus_nord_n30_se_5g_v
