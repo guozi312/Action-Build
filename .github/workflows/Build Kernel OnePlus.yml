@@ -1014,6 +1014,9 @@ jobs:
 
           PATCH_DIR="${GITHUB_WORKSPACE}/kernel_workspace/SukiSU_patch/other/zram/zram_patch/${{ env.KERNEL_VERSION }}"
           cd kernel_workspace/kernel_platform/common
+          if [[ "$KERNEL_VERSION" == "5.10" && "${CPU}" == mt* ]]; then
+            sed -i 's/select CRYPTO_LZO/depends on CRYPTO_LZO/' ./mm/oplus_mm/hybridswap_zram/Kconfig
+          fi
           echo "正在打lz4kd补丁"
           patch -p1 -F 3 < "${PATCH_DIR}/lz4kd.patch" || true
           echo 'lz4kd_patch完成'
