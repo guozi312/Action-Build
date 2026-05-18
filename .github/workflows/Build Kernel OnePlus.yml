@@ -1344,9 +1344,11 @@ jobs:
               echo "✅ BINDGEN version: $($BINDGEN_BIN --version | head -n1)"
             else
               echo "⚠️ prebuilts bindgen 未找到，fallback 到 cargo 安装 bindgen 0.69.5"
+              echo "::group::Install bindgen via cargo"
               curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain none
               source "$HOME/.cargo/env"
               cargo install bindgen-cli --version 0.69.5
+              echo "::endgroup::"
               BINDGEN_BIN=$(which bindgen)
               export BINDGEN="$BINDGEN_BIN"
               echo "✅ BINDGEN_BIN (cargo): $BINDGEN_BIN"
