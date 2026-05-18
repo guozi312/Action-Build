@@ -595,7 +595,6 @@ jobs:
           echo "KV1=${KMI#*-}"       | cut -d. -f1 >> $GITHUB_ENV
           echo "KV2=${KMI#*-}"       | tr -d '.' >> $GITHUB_ENV
           echo "KV3=${NEW_VERSION}"     | tr -d '.' >> $GITHUB_ENV
-          echo "KERNEL_SHORT_VERSION=$(echo $NEW_VERSION | cut -d. -f1,2)" >> $GITHUB_ENV
           echo "KERNEL_SHORT_PATCH_VERSION=$(echo $NEW_VERSION | cut -d. -f1,2 | tr '.' '_')" >> $GITHUB_ENV
 
       - name: Rust Version Handling
