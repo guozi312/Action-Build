@@ -1065,119 +1065,125 @@ jobs:
           CONFIG_FILE=./arch/arm64/configs/gki_defconfig
           KERNEL_VERSION="${{ env.KERNEL_VERSION }}"
 
+          set_config() {
+            local key="${1%%=*}"
+            sed -i "/^${key}=/d" "$CONFIG_FILE"
+            echo "$1" >> "$CONFIG_FILE"
+          }
+
           # KernelSU Next配置
-          echo "CONFIG_KSU=y" >> "$CONFIG_FILE"
+          set_config "CONFIG_KSU=y"
 
           # KPM配置
           if [ "${{ github.event.inputs.KPM }}" = "KPM" ] || [ "${{ github.event.inputs.KPM }}" = "N/A" ]; then
-            echo "CONFIG_KPM=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_KPM=y"
           fi
           if [ "${{ github.event.inputs.KPM }}" = "KPN" ]; then
-            echo "CONFIG_KPM=n" >> "$CONFIG_FILE"
+            set_config "CONFIG_KPM=n"
           fi
 
           # SUSFS配置
           if [ "${{ github.event.inputs.SUSFS_META }}" != "-1" ]; then
-            echo "CONFIG_KSU_SUSFS=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_SUS_PATH=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_SUS_MAP=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_SUS_MOUNT=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_SUS_KSTAT=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_SPOOF_UNAME=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_ENABLE_LOG=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> "$CONFIG_FILE"
-            echo "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_KSU_SUSFS=y"
+            set_config "CONFIG_KSU_SUSFS_SUS_PATH=y"
+            set_config "CONFIG_KSU_SUSFS_SUS_MAP=y"
+            set_config "CONFIG_KSU_SUSFS_SUS_MOUNT=y"
+            set_config "CONFIG_KSU_SUSFS_SUS_KSTAT=y"
+            set_config "CONFIG_KSU_SUSFS_SPOOF_UNAME=y"
+            set_config "CONFIG_KSU_SUSFS_ENABLE_LOG=y"
+            set_config "CONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y"
+            set_config "CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y"
+            set_config "CONFIG_KSU_SUSFS_OPEN_REDIRECT=y"
           else
-            echo "CONFIG_KSU_SUSFS=n" >> "$CONFIG_FILE"
+            set_config "CONFIG_KSU_SUSFS=n"
           fi
 
           # TMPFS配置*
-          echo "CONFIG_TMPFS_XATTR=y" >> "$CONFIG_FILE"
-          echo "CONFIG_TMPFS_POSIX_ACL=y" >> "$CONFIG_FILE"
+          set_config "CONFIG_TMPFS_XATTR=y"
+          set_config "CONFIG_TMPFS_POSIX_ACL=y"
 
           # BBR & ECN配置*
           if [ "${{ github.event.inputs.CCM }}" = "true" ]; then
-            echo "CONFIG_TCP_CONG_ADVANCED=y" >> "$CONFIG_FILE"
-            echo "CONFIG_TCP_CONG_BBR=y" >> "$CONFIG_FILE"
-            echo "CONFIG_NET_SCH_FQ=y" >> "$CONFIG_FILE"
-            echo "CONFIG_TCP_CONG_BIC=n" >> "$CONFIG_FILE"
-            echo "CONFIG_TCP_CONG_WESTWOOD=n" >> "$CONFIG_FILE"
-            echo "CONFIG_TCP_CONG_HTCP=n" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_ECN=y" >> "$CONFIG_FILE"
-            echo "CONFIG_TCP_ECN=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IPV6_ECN=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_NF_TARGET_ECN=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_TCP_CONG_ADVANCED=y"
+            set_config "CONFIG_TCP_CONG_BBR=y"
+            set_config "CONFIG_NET_SCH_FQ=y"
+            set_config "CONFIG_TCP_CONG_BIC=n"
+            set_config "CONFIG_TCP_CONG_WESTWOOD=n"
+            set_config "CONFIG_TCP_CONG_HTCP=n"
+            set_config "CONFIG_IP_ECN=y"
+            set_config "CONFIG_TCP_ECN=y"
+            set_config "CONFIG_IPV6_ECN=y"
+            set_config "CONFIG_IP_NF_TARGET_ECN=y"
           fi
 
           # Re-Kernel配置*
           if [ "${{ github.event.inputs.RE_KERNEL }}" = "true" ]; then
-            echo "CONFIG_REKERNEL=y" >> "$CONFIG_FILE"
-            echo "CONFIG_REKERNEL_NETWORK=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_REKERNEL=y"
+            set_config "CONFIG_REKERNEL_NETWORK=y"
           fi
 
           # ZRAM配置*
           if [[ "${{ github.event.inputs.ZRAM }}" == 1* ]]; then
-            echo "CONFIG_CRYPTO_LZ4HC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_LZ4K=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_LZ4KD=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_842=y" >> "$CONFIG_FILE"
-            echo "CONFIG_CRYPTO_LZ4K_OPLUS=y" >> "$CONFIG_FILE"
-            echo "CONFIG_ZRAM_WRITEBACK=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_CRYPTO_LZ4HC=y"
+            set_config "CONFIG_CRYPTO_LZ4K=y"
+            set_config "CONFIG_CRYPTO_LZ4KD=y"
+            set_config "CONFIG_CRYPTO_842=y"
+            set_config "CONFIG_CRYPTO_LZ4K_OPLUS=y"
+            set_config "CONFIG_ZRAM_WRITEBACK=y"
           fi
 
           # LSM配置*
           if [ "${{ github.event.inputs.LSM_BBG }}" = "true" ]; then
-            echo "CONFIG_BBG=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_BBG=y"
           fi
 
           # DROID_SPACES配置*
           if [ "${{ github.event.inputs.DROID_SPACES }}" = "true" ]; then
-            echo "CONFIG_NTSYNC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_SYSVIPC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_DEVTMPFS=y" >> "$CONFIG_FILE"
-            echo "CONFIG_PID_NS=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IPC_NS=y" >> "$CONFIG_FILE"
-            echo "CONFIG_NAMESPACES=y" >> "$CONFIG_FILE"
-            echo "CONFIG_POSIX_MQUEUE=y" >> "$CONFIG_FILE"
-            echo "CONFIG_NETFILTER_XT_TARGET_REJECT=y" >> "$CONFIG_FILE"
-            echo "CONFIG_NETFILTER_XT_TARGET_LOG=y" >> "$CONFIG_FILE"
-            echo "CONFIG_NETFILTER_XT_MATCH_RECENT=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_NTSYNC=y"
+            set_config "CONFIG_SYSVIPC=y"
+            set_config "CONFIG_DEVTMPFS=y"
+            set_config "CONFIG_PID_NS=y"
+            set_config "CONFIG_IPC_NS=y"
+            set_config "CONFIG_NAMESPACES=y"
+            set_config "CONFIG_POSIX_MQUEUE=y"
+            set_config "CONFIG_NETFILTER_XT_TARGET_REJECT=y"
+            set_config "CONFIG_NETFILTER_XT_TARGET_LOG=y"
+            set_config "CONFIG_NETFILTER_XT_MATCH_RECENT=y"
           fi
 
           # IPSET & IPv6_NAT配置*
           if [ "${{ github.event.inputs.NETFILTER }}" = "true" ]; then
             if [[ "$KERNEL_VERSION" != "6.12" && "${CPU}" != mt* ]]; then
-              echo "CONFIG_BPF_STREAM_PARSER=y" >> "$CONFIG_FILE"
+              set_config "CONFIG_BPF_STREAM_PARSER=y"
             fi
-            echo "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y" >> "$CONFIG_FILE"
-            echo "CONFIG_NETFILTER_XT_SET=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_MAX=65534" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_BITMAP_IP=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_BITMAP_IPMAC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_BITMAP_PORT=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IP=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPMARK=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPPORT=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPPORTIP=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPPORTNET=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_IPMAC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_MAC=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETPORTNET=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NET=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETNET=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETPORT=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_HASH_NETIFACE=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP_SET_LIST_SET=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP6_NF_NAT=y" >> "$CONFIG_FILE"
-            echo "CONFIG_IP6_NF_TARGET_MASQUERADE=y" >> "$CONFIG_FILE"
+            set_config "CONFIG_NETFILTER_XT_MATCH_ADDRTYPE=y"
+            set_config "CONFIG_NETFILTER_XT_SET=y"
+            set_config "CONFIG_IP_SET=y"
+            set_config "CONFIG_IP_SET_MAX=65534"
+            set_config "CONFIG_IP_SET_BITMAP_IP=y"
+            set_config "CONFIG_IP_SET_BITMAP_IPMAC=y"
+            set_config "CONFIG_IP_SET_BITMAP_PORT=y"
+            set_config "CONFIG_IP_SET_HASH_IP=y"
+            set_config "CONFIG_IP_SET_HASH_IPMARK=y"
+            set_config "CONFIG_IP_SET_HASH_IPPORT=y"
+            set_config "CONFIG_IP_SET_HASH_IPPORTIP=y"
+            set_config "CONFIG_IP_SET_HASH_IPPORTNET=y"
+            set_config "CONFIG_IP_SET_HASH_IPMAC=y"
+            set_config "CONFIG_IP_SET_HASH_MAC=y"
+            set_config "CONFIG_IP_SET_HASH_NETPORTNET=y"
+            set_config "CONFIG_IP_SET_HASH_NET=y"
+            set_config "CONFIG_IP_SET_HASH_NETNET=y"
+            set_config "CONFIG_IP_SET_HASH_NETPORT=y"
+            set_config "CONFIG_IP_SET_HASH_NETIFACE=y"
+            set_config "CONFIG_IP_SET_LIST_SET=y"
+            set_config "CONFIG_IP6_NF_NAT=y"
+            set_config "CONFIG_IP6_NF_TARGET_MASQUERADE=y"
           fi
 
           # 构建优化
           if [[ "$ENABLE_RUST" == "true" ]]; then
-            echo "CONFIG_RUST=y" >> "$CONFIG_FILE"
-            echo "CONFIG_ANDROID_BINDER_IPC_RUST=m" >> "$CONFIG_FILE"
+            set_config "CONFIG_RUST=y"
+            set_config "CONFIG_ANDROID_BINDER_IPC_RUST=m"
           fi
 
           # 移除构建审查
