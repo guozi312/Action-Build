@@ -1299,10 +1299,10 @@ jobs:
 
           # BINDGEN 检测与 fallback
           if [[ "$ENABLE_RUST" == "true" ]]; then
-            BINDGEN_BIN="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang-tools/linux-x86/bin/bindgen"
-            if [ ! -x "$BINDGEN_BIN" ]; then
-              BINDGEN_BIN="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/clang-tools/linux-x86/bin/bindgen"
-            fi
+            BINDGEN_BIN=""
+            for f in "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/clang-tools/linux-x86/bin/bindgen" "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/clang-tools/linux-x86/bin/bindgen"; do
+              [ -x "$f" ] && BINDGEN_BIN="$f" && break
+            done
             if [ -x "$BINDGEN_BIN" ]; then
               export BINDGEN="$BINDGEN_BIN"
               echo "✅ bindgen exists: $BINDGEN_BIN"
@@ -1320,42 +1320,36 @@ jobs:
           fi
 
           # PAHOLE 检测与 fallback
-          PAHOLE_BIN="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/kernel-build-tools/linux-x86/bin/pahole"
-          if [ ! -x "$PAHOLE_BIN" ]; then
-            echo "⚠️ prebuilts pahole 未找到: $PAHOLE_BIN"
-            PAHOLE_BIN="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/kernel-build-tools/linux-x86/bin/pahole"
+          PAHOLE_BIN=""
+          for f in "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/kernel-build-tools/linux-x86/bin/pahole" "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/kernel-build-tools/linux-x86/bin/pahole"; do
+            [ -x "$f" ] && PAHOLE_BIN="$f" && break
+          done
+          if [ -z "$PAHOLE_BIN" ]; then
+            PAHOLE_BIN="$(which pahole 2>/dev/null)"
+            [ -x "$PAHOLE_BIN" ] && echo "⚠️ pahole fallback to PATH: $PAHOLE_BIN"
           fi
-          if [ ! -x "$PAHOLE_BIN" ]; then
-            echo "⚠️ prebuilts pahole 未找到: $PAHOLE_BIN"
-            PAHOLE_BIN=$(which pahole 2>/dev/null || true)
-            if [ -x "$PAHOLE_BIN" ]; then
-              echo "✅ pahole fallback to PATH: $PAHOLE_BIN"
-            else
-              echo "❌ pahole 完全缺失，终止构建"
-              exit 13
-            fi
-          else
+          if [ -x "$PAHOLE_BIN" ]; then
             echo "✅ pahole exists: $PAHOLE_BIN"
+          else
+            echo "❌ pahole 完全缺失，终止构建"
+            exit 13
           fi
 
           # RUSTC 检测与 fallback
           if [[ "$ENABLE_RUST" == "true" ]]; then
-            RUSTC_BIN="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/rust/linux-x86/$RUSTC_VERSION/bin/rustc"
-            if [ ! -x "$RUSTC_BIN" ]; then
-              echo "⚠️ prebuilts rustc 未找到: $RUSTC_BIN"
-              RUSTC_BIN="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/rust/linux-x86/$RUSTC_VERSION/bin/rustc"
+            RUSTC_BIN=""
+            for f in "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts/rust/linux-x86/$RUSTC_VERSION/bin/rustc" "$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/prebuilts-master/rust/linux-x86/$RUSTC_VERSION/bin/rustc"; do
+              [ -x "$f" ] && RUSTC_BIN="$f" && break
+            done
+            if [ -z "$RUSTC_BIN" ]; then
+              RUSTC_BIN="$(which rustc 2>/dev/null)"
+              [ -x "$RUSTC_BIN" ] && echo "⚠️ rustc fallback to PATH: $RUSTC_BIN"
             fi
-            if [ ! -x "$RUSTC_BIN" ]; then
-              echo "⚠️ prebuilts rustc 未找到: $RUSTC_BIN"
-              RUSTC_BIN=$(which rustc 2>/dev/null || true)
-              if [ -x "$RUSTC_BIN" ]; then
-                echo "✅ rustc fallback to PATH: $RUSTC_BIN"
-              else
-                echo "❌ rustc 完全缺失且 ENABLE_RUST=true，终止构建"
-                exit 13
-              fi
-            else
+            if [ -x "$RUSTC_BIN" ]; then
               echo "✅ rustc exists: $RUSTC_BIN"
+            else
+              echo "❌ rustc 完全缺失且 ENABLE_RUST=true，终止构建"
+              exit 13
             fi
           fi
 
