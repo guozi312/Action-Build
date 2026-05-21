@@ -986,7 +986,7 @@ jobs:
             rm -f drivers/misc/ntsync.c
           fi
           patch -p1 --forward < "${PATCH_DIR}/ntsync/ntsync_base.patch" || true
-          if [[ "$FILE" == oneplus_10r* || "$FILE" == "oneplus_ace_race_v" ]]; then
+          if [[ "$FILE" == oneplus_10r* ]]; then
             patch -p1 --forward < "${PATCH_DIR}/ntsync/ntsync_compat_android12-5.10_14.patch" || true
           else
             patch -p1 --forward < "${PATCH_DIR}/ntsync/ntsync_compat_$([ -f "${PATCH_DIR}/ntsync/ntsync_compat_${KMI}_${ANDROID_SHORT_VERSION}.patch" ] && echo "${KMI}_${ANDROID_SHORT_VERSION}" || echo "${KMI}").patch" || true
