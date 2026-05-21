@@ -62,6 +62,8 @@ on:
           - oneplus_15_Canary
           - oneplus_15t
           - oneplus_15t_Canary
+          - oneplus_pad_3_pro
+          - oneplus_pad_3_pro_Canary
       MANAGER_SOURCE:
         type: choice
         description: "管理器调用方向"
