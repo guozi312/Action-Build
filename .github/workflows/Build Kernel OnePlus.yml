@@ -54,13 +54,13 @@ on:
           - oneplus_ace_6
           - oneplus_turbo_6
           - oneplus_ace_6t
-          - oneplus_ace_6t_aosp
+          - oneplus_ace_6t_Canary
           - oneplus_15r
-          - oneplus_15r_aosp
+          - oneplus_15r_Canary
           - oneplus_15
-          - oneplus_15_aosp
+          - oneplus_15_Canary
           - oneplus_15t
-          - oneplus_15t_aosp
+          - oneplus_15t_Canary
       MANAGER_SOURCE:
         type: choice
         description: "管理器调用方向"
