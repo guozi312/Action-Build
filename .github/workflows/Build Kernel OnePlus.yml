@@ -1365,7 +1365,7 @@ jobs:
           fi
 
           LD_WRAPPER=""
-          if [ "${{ github.event.inputs.BUILD_NOCACHE }}" = "false" ] && [[ "$KERNEL_VERSION" == "5.10" || "$KERNEL_VERSION" == "5.15" ]]; then
+          if [ "${{ github.event.inputs.BUILD_NOCACHE }}" = "false" ] && [[ "$KERNEL_VERSION" == 5.* ]]; then
             LDCACHE_DIR="${GITHUB_WORKSPACE}/kernel_workspace/.thinlto-cache"
             mkdir -p "$LDCACHE_DIR"
             LD_WRAPPER="${GITHUB_WORKSPACE}/kernel_workspace/ld-wrapper"
@@ -1414,10 +1414,10 @@ jobs:
             MAKE_ARGS+=(RUSTC="$RUSTC_BIN")
           fi
 
-          make O=out "${MAKE_ARGS[@]}" gki_defconfig
+          make O=out "${MAKE_ARGS[@]}" gki_defconfig --no-print-directory
 
-          if [[ "$KERNEL_VERSION" == "5.10" || "$KERNEL_VERSION" == "5.15" ]]; then
-            echo ">> 设置 LTO = thin"
+          if [[ "$KERNEL_VERSION" == 5.* ]]; then
+            echo "# 设置 LTO = thin"
             scripts/config --file out/.config -e LTO_CLANG
             scripts/config --file out/.config -e LTO_CLANG_THIN
             scripts/config --file out/.config -d LTO_CLANG_NONE
@@ -1425,14 +1425,14 @@ jobs:
           fi
 
           if [[ "$KERNEL_VERSION" == "6.12" ]]; then
-            echo ">> 设置 LTO = none"
+            echo "# 设置 LTO = none"
             scripts/config --file out/.config -e LTO_CLANG
             scripts/config --file out/.config -e LTO_CLANG_NONE
             scripts/config --file out/.config -d LTO_CLANG_THIN
             scripts/config --file out/.config -d LTO_CLANG_FULL
           fi
 
-          make O=out "${MAKE_ARGS[@]}" olddefconfig
+          make O=out "${MAKE_ARGS[@]}" olddefconfig --no-print-directory
           make -j"$(nproc --all)" O=out "${MAKE_ARGS[@]}"
           ccache -s
 
