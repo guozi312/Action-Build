@@ -563,6 +563,11 @@ jobs:
             rm -f "$dir/android/abi_gki_protected_exports_"* 2>/dev/null || echo "No protected exports in $dir"
           done
 
+          if grep -q 'check_defconfig = None,' kernel_platform/build/kernel/kleaf/common_kernels.bzl; then
+            sed -i 's/check_defconfig = None,/check_defconfig = "disabled",/' kernel_platform/build/kernel/kleaf/common_kernels.bzl
+            sed -i 's/if check_defconfig == None:/if False:  # check_defconfig == None:/' kernel_platform/build/kernel/kleaf/common_kernels.bzl
+          fi
+
       - name: Kernel Version Handling
         run: |
           cd kernel_workspace/kernel_platform
@@ -1104,9 +1109,16 @@ jobs:
           MANAGER_BRANCH="${{ steps.manager.outputs.manager_branch }}"
 
           set_config() {
-            local key="${1%%=*}"
-            sed -i "/^${key}=/d" "$CONFIG_FILE"
-            echo "$1" >> "$CONFIG_FILE"
+            local val="$1"
+            local key="${val%%=*}"
+            if grep -qF "${key}=" "$CONFIG_FILE" || grep -qF "# ${key} is not set" "$CONFIG_FILE"; then
+              VAL="$val" awk -v key="$key" '
+                $0 == "# " key " is not set" || index($0, key "=") == 1 { print ENVIRON["VAL"]; next }
+                { print }
+              ' "$CONFIG_FILE" > "${CONFIG_FILE}.tmp" && mv "${CONFIG_FILE}.tmp" "$CONFIG_FILE" || rm -f "${CONFIG_FILE}.tmp"
+            else
+              printf '%s\n' "$val" >> "$CONFIG_FILE"
+            fi
           }
 
           # ReSukiSU配置
