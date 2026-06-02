@@ -556,7 +556,9 @@ jobs:
           done
 
           # 移除构建审查
-          sed -i 's/check_defconfig//' kernel_platform/common/build.config.gki
+          if grep -q 'check_defconfig' kernel_platform/common/build.config.gki; then
+            sed -i 's/check_defconfig//' kernel_platform/common/build.config.gki
+          fi
           if grep -q 'check_defconfig = None,' kernel_platform/build/kernel/kleaf/common_kernels.bzl; then
             sed -i 's/check_defconfig = None,/check_defconfig = "disabled",/' kernel_platform/build/kernel/kleaf/common_kernels.bzl
             sed -i 's/if check_defconfig == None:/if False:  # check_defconfig == None:/' kernel_platform/build/kernel/kleaf/common_kernels.bzl
