@@ -607,8 +607,8 @@ jobs:
           fi
 
           # 读取修改后的版本
-          NEW_VERSION="$VERSIONLEVEL.$PATCHLEVEL.$SUBLEVEL"
-          # CKERNEL_VERSION(3位)：被修改之后的完整内核版本号，用于欺骗系统
+          NEW_VERSION="$VERSIONLEVEL.$PATCHLEVEL.$RESUBLEVEL"
+          # CKERNEL_VERSION(3位)：被修改之后或者未经过修改的完整内核版本号，用于欺骗系统
           # DKERNEL_VERSION(3位)：被修改之前的完整内核版本号，真实值
           if [ "$ORIG_VERSION" != "$NEW_VERSION" ]; then
             echo "Kernel Version:$ORIG_VERSION->$NEW_VERSION"
@@ -616,7 +616,7 @@ jobs:
             echo "DKERNEL_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
           else
             echo "Kernel Version:$ORIG_VERSION No changes"
-            echo "DKERNEL_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
+            echo "CKERNEL_VERSION=$ORIG_VERSION" >> $GITHUB_ENV
           fi
 
           # 内核版本的数字转换，仅前两位不包含 SUBLEVEL
