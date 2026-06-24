@@ -595,7 +595,7 @@ jobs:
           echo "PATCHLEVEL=$PATCHLEVEL" >> $GITHUB_ENV
           # SUBLEVEL 仅传递修改前的值，因为伪装并不影响原源码状态
           echo "SUBLEVEL=$SUBLEVEL" >> $GITHUB_ENV
-          ORIG_VERSION="$VERSIONLEVEL.$PATCHLEVEL.$SUBLEVEL"
+          ORIG_VERSION=$(awk '/^VERSION =/ {v=$3} /^PATCHLEVEL =/ {p=$3} /^SUBLEVEL =/ {s=$3} END {print v"."p"."s}' ./common/Makefile)
 
           # 强制修改 SUBLEVEL (内核等级)
           RESUBLEVEL="${{ github.event.inputs.RESUBLEVEL }}"
@@ -604,11 +604,10 @@ jobs:
             sed -i "s/^SUBLEVEL[[:space:]]*=[[:space:]]*.*/SUBLEVEL = $RESUBLEVEL/" ./common/Makefile
           else
             echo "未指定 SUBLEVEL，保持默认"
-            RESUBLEVEL="$SUBLEVEL"
           fi
 
           # 读取修改后的版本
-          NEW_VERSION="$VERSIONLEVEL.$PATCHLEVEL.$RESUBLEVEL"
+          NEW_VERSION=$(awk '/^VERSION =/ {v=$3} /^PATCHLEVEL =/ {p=$3} /^SUBLEVEL =/ {s=$3} END {print v"."p"."s}' ./common/Makefile)
           # CKERNEL_VERSION(3位)：被修改之后或者未经过修改的完整内核版本号，用于欺骗系统
           # DKERNEL_VERSION(3位)：被修改之前的完整内核版本号，真实值
           if [ "$ORIG_VERSION" != "$NEW_VERSION" ]; then
