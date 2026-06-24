@@ -611,9 +611,10 @@ jobs:
           RESUBLEVEL="${{ github.event.inputs.RESUBLEVEL }}"
           if [ -n "$RESUBLEVEL" ]; then
             echo "修改 SUBLEVEL 为 $RESUBLEVEL"
-            sed -i "s/^\(SUBLEVEL[[:space:]]*=[[:space:]]*\).*/\1$RESUBLEVEL/" ./common/Makefile
+            sed -i "s/^SUBLEVEL[[:space:]]*=[[:space:]]*.*/SUBLEVEL = $RESUBLEVEL/" ./common/Makefile
           else
             echo "未指定 SUBLEVEL，保持默认"
+            RESUBLEVEL="$SUBLEVEL"
           fi
 
           # 读取修改后的版本
