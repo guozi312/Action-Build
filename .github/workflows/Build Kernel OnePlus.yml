@@ -745,6 +745,7 @@ jobs:
           cd kernel_workspace/kernel_platform
           MANAGER_BRANCH="${{ steps.manager.outputs.manager_branch }}"
           KSU_META="${{ github.event.inputs.KSU_META }}"
+          FAST_BUILD="${{ github.event.inputs.FAST_BUILD }}"
 
           # 必须包含两个分隔符（至少三个字段）
           if [[ "$(grep -o '/' <<< "$KSU_META" | wc -l)" -lt 2 ]]; then
@@ -772,6 +773,13 @@ jobs:
 
           KSU_VERSION=$(expr $(git rev-list --count "$MANAGER_BRANCH" 2>/dev/null || echo 13000) + 30700)
           echo "KSUVER=$KSU_VERSION" >> $GITHUB_ENV
+          if [ "$FAST_BUILD" = "false" ]; then
+            KSU_KBUILD="$GITHUB_WORKSPACE/kernel_workspace/kernel_platform/KernelSU/kernel/Kbuild"
+            if [[ -f "$KSU_KBUILD" ]]; then
+              sed -i 's|^LOCAL_GIT_EXISTS :=.*|LOCAL_GIT_EXISTS := 1|' "$KSU_KBUILD"
+              echo "✅ 已修复 Bazel 沙箱 git 检测"
+            fi
+          fi
 
       - name: Apply Patches ReSukiSU
         env:
